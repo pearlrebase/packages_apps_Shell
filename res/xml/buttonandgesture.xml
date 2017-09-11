@@ -16,7 +16,29 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:title="@string/buttonandgesture_main">
 
-   <com.pearl.shell.preferences.SecureSettingSwitchPreference
+    <PreferenceCategory
+        android:key="hardware_keys"
+        android:title="@string/hardware_keys_category" >
+
+        <com.pearl.shell.preferences.CustomSeekBarPreference
+            android:key="button_brightness"
+            android:title="@string/button_brightness_title"
+            android:max="255"
+            settings:min="0"
+            settings:units=""
+            android:persistent="false" />
+
+        <ListPreference
+            android:dialogTitle="@string/backlight_timeout_title"
+            android:entries="@array/backlight_timeout_entries"
+            android:entryValues="@array/backlight_timeout_values"
+            android:key="backlight_timeout"
+            android:persistent="false"
+            android:title="@string/backlight_timeout_title" />
+
+     </PreferenceCategory>
+
+    <com.pearl.shell.preferences.SecureSettingSwitchPreference
         android:key="reboot_in_power_menu"
         android:title="@string/powermenu_reboot_title"
         android:defaultValue="true" />
