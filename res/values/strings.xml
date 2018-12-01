@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2018 The Potato Open Sauce Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<resources>
+    <string name="shell_dashboard_title">Shell</string>
+    <string name="shell_dashboard_summary">Pearl Customization Hub</string>
+    <string name="statusbar_main">Statusbar</string>
+    <string name="statusbar_main_summary">Change StatusBar Styles</string>
+    <string name="appearance_main">Appearance</string>
+    <string name="appearance_main_summary">Manage The Appearance</string>
+    <string name="buttonandgesture_main">Buttons &amp; Gestures</string>
+    <string name="buttonandgesture_main_summary">Navigation keys, gestures</string>
+    <string name="notification_main">Notifications</string>
+    <string name="notification_main_summary">Control device alerts</string>
+    <string name="misc_main">Miscellaneous</string>
+    <string name="misc_main_summary">Few More Tweaks</string>
+</resources>
