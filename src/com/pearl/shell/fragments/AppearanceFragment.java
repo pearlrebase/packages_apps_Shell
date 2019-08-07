@@ -20,6 +20,8 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.os.ServiceManager;
 import android.os.UserHandle;
+import android.graphics.Color;
+import android.os.SystemProperties;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -42,14 +44,16 @@ import com.android.settings.wrapper.OverlayManagerWrapper.OverlayInfo;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ThemeFragment extends SettingsPreferenceFragment
+public class AppearanceFragment extends SettingsPreferenceFragment
         implements Preference.OnPreferenceChangeListener, Indexable {
 
-    private static final String KEY_ACCENT_PICKER = "accent_picker";
     private static final String KEY_BASE_THEME = "base_theme";
     private static final String KEY_SYSUI_THEME = "systemui_theme";
     private static final String BASE_THEME_CATEGORY = "android.base_theme";
-    private Preference mSystemThemeColor;
+    private static final String ACCENT_COLOR = "accent_color";
+    private static final String ACCENT_COLOR_PROP = "persist.sys.theme.accentcolor";
+
+    private ColorPickerPreference mThemeColor;
     private ListPreference mSystemThemeBase;
     private Fragment mCurrentFragment = this;
     private OverlayManagerWrapper mOverlayService;
@@ -71,6 +75,13 @@ public class ThemeFragment extends SettingsPreferenceFragment
             Settings.Secure.putInt(getContext().getContentResolver(), Settings.Secure.THEME_MODE, value);
             mSystemUiThemePref.setSummary(mSystemUiThemePref.getEntries()[value]);
         }
+        } else if (preference == mThemeColor) {
+            int color = (Integer) newValue;
+            String hexColor = String.format("%08X", (0xFFFFFFFF & color));
+            SystemProperties.set(ACCENT_COLOR_PROP, hexColor);
+            mOverlayService.reloadAndroidAssets(UserHandle.USER_CURRENT);
+            mOverlayService.reloadAssets("com.android.settings", UserHandle.USER_CURRENT);
+            mOverlayService.reloadAssets("com.android.systemui", UserHandle.USER_CURRENT);
         return true;
     }
 
@@ -82,14 +93,9 @@ public class ThemeFragment extends SettingsPreferenceFragment
         mOverlayService = ServiceManager.getService(Context.OVERLAY_SERVICE) != null ? new OverlayManagerWrapper()
                 : null;
         mPackageManager = getActivity().getPackageManager();
-        setupAccentPicker();
         setupBasePref();
         setupStylePref();
-    }
-
-    private void setupAccentPicker() {
-        mSystemThemeColor = (Preference) findPreference(KEY_ACCENT_PICKER);
-        mSystemThemeColor.setSummary(getCurrentTheme(OverlayInfo.CATEGORY_THEME));
+        setupAccentPref();
     }
 
     private void setupBasePref() {
@@ -121,23 +127,19 @@ public class ThemeFragment extends SettingsPreferenceFragment
         mSystemUiThemePref.setOnPreferenceChangeListener(this);
     }
 
-    public void updateEnableState() {
-        if (mSystemThemeColor == null) {
-            return;
-        }
-        mSystemThemeColor.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                AccentPicker.show(mCurrentFragment, preference);
-                return true;
-            }
-        });
+    private void setupAccentPref() {
+        mThemeColor = (ColorPickerPreference) findPreference(ACCENT_COLOR);
+        String colorVal = SystemProperties.get(ACCENT_COLOR_PROP, "-1");
+        int color = "-1".equals(colorVal)
+                ? Color.WHITE
+                : Color.parseColor("#" + colorVal);
+        mThemeColor.setNewPreviewColor(color);
+        mThemeColor.setOnPreferenceChangeListener(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        updateEnableState();
     }
 
     @Override
