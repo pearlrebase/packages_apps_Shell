@@ -16,9 +16,16 @@
 
 package com.pearl.shell.fragments;
 
+import com.android.internal.logging.nano.MetricsProto;
+
+import android.app.Activity;
 import android.content.Context;
 import android.content.ContentResolver;
+import android.app.WallpaperManager;
+import android.content.Intent;
 import android.content.res.Resources;
+import android.hardware.fingerprint.FingerprintManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v14.preference.SwitchPreference;
 import android.support.v7.preference.ListPreference;
@@ -33,19 +40,67 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.android.settings.SettingsPreferenceFragment;
-import com.android.internal.logging.nano.MetricsProto;
 
-import com.pearl.shell.R;
+import com.pearl.shell.preferences.Utils;
 
 public class LockscreenSettings extends SettingsPreferenceFragment implements
         Preference.OnPreferenceChangeListener {
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    private static final String KEY_FACE_AUTO_UNLOCK = "face_auto_unlock";
+    private static final String KEY_FACE_UNLOCK_PACKAGE = "com.android.facelock";
+    private static final String FINGERPRINT_VIB = "fingerprint_success_vib";
+    private static final String FP_UNLOCK_KEYSTORE = "fp_unlock_keystore";
+
+    private FingerprintManager mFingerprintManager;
+    private SwitchPreference mFingerprintVib;
+    private SystemSettingSwitchPreference mFpKeystore;
+    private SwitchPreference mFaceUnlock;
+
+     @Override
+    public void onCreate(Bundle icicle) {
+        super.onCreate(icicle);
         addPreferencesFromResource(R.xml.shell_settings_lockscreen);
+
         ContentResolver resolver = getActivity().getContentResolver();
         final PreferenceScreen prefScreen = getPreferenceScreen();
+        Resources resources = getResources();
+
+		mFaceUnlock = (SwitchPreference) findPreference(KEY_FACE_AUTO_UNLOCK);
+        if (!Utils.isPackageInstalled(getActivity(), KEY_FACE_UNLOCK_PACKAGE)){
+            prefScreen.removePreference(mFaceUnlock);
+        } else {
+            mFaceUnlock.setChecked((Settings.Secure.getInt(getContext().getContentResolver(),
+                    Settings.Secure.FACE_AUTO_UNLOCK, 0) == 1));
+            mFaceUnlock.setOnPreferenceChangeListener(this);
+        }
+
+        mFingerprintManager = (FingerprintManager) getActivity().getSystemService(Context.FINGERPRINT_SERVICE);
+        mFingerprintVib = (SwitchPreference) findPreference(FINGERPRINT_VIB);
+        if (mFingerprintManager == null){
+            prefScreen.removePreference(mFingerprintVib);
+        } else {
+        mFingerprintVib.setChecked((Settings.System.getInt(getContentResolver(),
+                Settings.System.FINGERPRINT_SUCCESS_VIB, 1) == 1));
+        mFingerprintVib.setOnPreferenceChangeListener(this);
+        mFpKeystore = (SystemSettingSwitchPreference) findPreference(FP_UNLOCK_KEYSTORE);
+        }
+    }
+
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+        ContentResolver resolver = getActivity().getContentResolver();
+
+        if (preference == mFaceUnlock) {
+            boolean value = (Boolean) newValue;
+            Settings.Secure.putInt(getActivity().getContentResolver(),
+                    Settings.Secure.FACE_AUTO_UNLOCK, value ? 1 : 0);
+            return true;
+        } else if (preference == mFingerprintVib) {
+            boolean value = (Boolean) newValue;
+            Settings.System.putInt(getActivity().getContentResolver(),
+                    Settings.System.FINGERPRINT_SUCCESS_VIB, value ? 1 : 0);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -53,17 +108,4 @@ public class LockscreenSettings extends SettingsPreferenceFragment implements
         return MetricsProto.MetricsEvent.PEARL;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    public boolean onPreferenceChange(Preference preference, Object newValue) {
-        return false;
-    }
-}
+ }
