@@ -45,6 +45,7 @@ public class QuickSettings extends SettingsPreferenceFragment implements
         Preference.OnPreferenceChangeListener {
 
     private static final String OMNI_QS_PANEL_BG_ALPHA = "qs_panel_bg_alpha";
+    private static final String QS_TILE_STYLE = "qs_tile_style";
 
     private CustomSeekBarPreference mQsPanelAlpha;
 
@@ -60,6 +61,15 @@ public class QuickSettings extends SettingsPreferenceFragment implements
                 Settings.System.OMNI_QS_PANEL_BG_ALPHA, 255, UserHandle.USER_CURRENT);
         mQsPanelAlpha.setValue(qsPanelAlpha);
         mQsPanelAlpha.setOnPreferenceChangeListener(this);
+
+        mQsTileStyle = (ListPreference) findPreference(QS_TILE_STYLE);
+       int qsTileStyle = Settings.System.getIntForUser(resolver,
+               Settings.System.QS_TILE_STYLE, 0,
+	       UserHandle.USER_CURRENT);
+       int valueIndex = mQsTileStyle.findIndexOfValue(String.valueOf(qsTileStyle));
+       mQsTileStyle.setValueIndex(valueIndex >= 0 ? valueIndex : 0);
+       mQsTileStyle.setSummary(mQsTileStyle.getEntry());
+       mQsTileStyle.setOnPreferenceChangeListener(this);
     }
 
     @Override
@@ -84,7 +94,12 @@ public class QuickSettings extends SettingsPreferenceFragment implements
                     Settings.System.OMNI_QS_PANEL_BG_ALPHA, bgAlpha,
                     UserHandle.USER_CURRENT);
             return true;
+        } else if (preference == mQsTileStyle) {
+            int qsTileStyleValue = Integer.valueOf((String) objValue);
+            Settings.System.putIntForUser(resolver, Settings.System.QS_TILE_STYLE,
+                    qsTileStyleValue, UserHandle.USER_CURRENT);
+            mQsTileStyle.setSummary(mQsTileStyle.getEntries()[qsTileStyleValue]);
         }
-        return false;
+        return true;
     }
 }
