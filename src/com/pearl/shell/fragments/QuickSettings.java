@@ -17,6 +17,12 @@
 
 package com.pearl.shell.fragments;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.DialogInterface;
+import android.os.SystemProperties;
 import android.content.Context;
 import android.content.ContentResolver;
 import android.content.res.Resources;
@@ -39,6 +45,9 @@ import com.android.internal.logging.nano.MetricsProto;
 
 import com.pearl.shell.R;
 
+import java.util.Arrays;
+import java.util.HashSet;
+
 import com.pearl.shell.preferences.CustomSeekBarPreference;
 
 public class QuickSettings extends SettingsPreferenceFragment implements
@@ -48,6 +57,8 @@ public class QuickSettings extends SettingsPreferenceFragment implements
     private static final String QS_TILE_STYLE = "qs_tile_style";
 
     private CustomSeekBarPreference mQsPanelAlpha;
+    private ListPreference mQsTileStyle;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,6 +83,22 @@ public class QuickSettings extends SettingsPreferenceFragment implements
        mQsTileStyle.setOnPreferenceChangeListener(this);
     }
 
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+        if (preference == mQsPanelAlpha) {
+            int bgAlpha = (Integer) newValue;
+            Settings.System.putIntForUser(getContentResolver(),
+                    Settings.System.OMNI_QS_PANEL_BG_ALPHA, bgAlpha,
+                    UserHandle.USER_CURRENT);
+            return true;
+        } else if (preference == mQsTileStyle) {
+            int qsTileStyleValue = Integer.valueOf((String) newValue);
+            Settings.System.putIntForUser(resolver, Settings.System.QS_TILE_STYLE,
+                    qsTileStyleValue, UserHandle.USER_CURRENT);
+            mQsTileStyle.setSummary(mQsTileStyle.getEntries()[qsTileStyleValue]);
+        }
+        return true;
+    }
+
     @Override
     public int getMetricsCategory() {
         return MetricsProto.MetricsEvent.PEARL;
@@ -85,21 +112,5 @@ public class QuickSettings extends SettingsPreferenceFragment implements
     @Override
     public void onPause() {
         super.onPause();
-    }
-
-    public boolean onPreferenceChange(Preference preference, Object newValue) {
-        if (preference == mQsPanelAlpha) {
-            int bgAlpha = (Integer) newValue;
-            Settings.System.putIntForUser(getContentResolver(),
-                    Settings.System.OMNI_QS_PANEL_BG_ALPHA, bgAlpha,
-                    UserHandle.USER_CURRENT);
-            return true;
-        } else if (preference == mQsTileStyle) {
-            int qsTileStyleValue = Integer.valueOf((String) objValue);
-            Settings.System.putIntForUser(resolver, Settings.System.QS_TILE_STYLE,
-                    qsTileStyleValue, UserHandle.USER_CURRENT);
-            mQsTileStyle.setSummary(mQsTileStyle.getEntries()[qsTileStyleValue]);
-        }
-        return true;
     }
 }
