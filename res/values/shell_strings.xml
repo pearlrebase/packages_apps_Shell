@@ -240,4 +240,8 @@
     <!-- Lock screen visualizer -->
     <string name="lockscreen_visualizer_enable">Enable lockscreen visualizer</string>
     <string name="lockscreen_visualizer_enable_summary">Show visualizer on lockscreen when music is playing</string>
+
+    <!-- Show VoLTE icon on statusbar -->
+    <string name="volte_icon_title">VoLTE icon</string>
+    <string name="volte_icon_summary">Display VoLTE icon</string>
 </resources>
