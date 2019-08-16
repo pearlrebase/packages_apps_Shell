@@ -26,6 +26,12 @@
                 android:targetClass="com.android.systemui.tuner.StatusbarItemsActivity" />
     </Preference>
 
+        <Preference
+            android:key="battery_settings"
+            android:title="@string/battery_style_category_title"
+            android:summary="@string/battery_style_category_summary"
+            android:fragment="com.pearl.shell.fragments.StatusBarBattery" />
+
         <com.pearl.shell.preferences.SystemSettingSwitchPreference
             android:key="double_tap_sleep_gesture"
             android:title="@string/double_tap_to_sleep_statusbar_title"
