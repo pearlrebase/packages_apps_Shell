@@ -264,9 +264,17 @@
     <string name="volume_rocker_wake_summary">Pressing the volume keys will wake your device</string>
 
     <!-- QS tile styles -->
-    <string name="qs_tile_style_title">QS tile style</string>
+    <string name="qs_tile_style_title">QS Tile Style</string>
     <string name="qstile_default">Default</string>
-    <string name="qstile_circle_trim">Circle with trim</string>
-    <string name="qstile_dual_tone_circle">Dual-toned circle</string>
-    <string name="qstile_squircle_trim">Squircle with trim</string>
+    <string name="qstile_circle_trim">Circle (Trim)</string>
+    <string name="qstile_dual_tone_circle">Circle (Dual-Toned)</string>
+    <string name="qstile_squircle_trim">Squircle (Trim)</string>
+    <string name="qstile_circle_gradient">Circle (Gradient)</string>
+    <string name="qstile_wavey">Wavey</string>
+    <string name="qstile_circle_dualtone">Circle with Dual Tone</string>
+    <string name="qstile_pokesign">Pokesign</string>
+    <string name="qstile_ninja">Ninja</string>
+    <string name="qstile_attemptmountain">An attempt of a mountain</string>
+    <string name="qstile_teardrop">Teardrop</string>
+    <string name="qstile_inkdrop">Inkdrop</string>
 </resources>
