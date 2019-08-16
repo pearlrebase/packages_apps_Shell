@@ -39,7 +39,7 @@ import com.android.internal.logging.nano.MetricsProto;
 
 import com.pearl.shell.R;
 
-import com.superior.settings.preferences.CustomSeekBarPreference;
+import com.pearl.shell.preferences.CustomSeekBarPreference;
 
 public class QuickSettings extends SettingsPreferenceFragment implements
         Preference.OnPreferenceChangeListener {
