@@ -19,6 +19,10 @@
     android:title="@string/misc_title"
     xmlns:settings="http://schemas.android.com/apk/res/com.android.settings">
 
+    <Preference
+        android:title="@string/app_ops_settings"
+        android:fragment="com.android.settings.applications.appops.AppOpsSummary"/>
+
     <com.pearl.shell.preferences.SystemSettingSwitchPreference 
             android:key="three_finger_gesture" 
             android:title="@string/three_finger_gesture" 
