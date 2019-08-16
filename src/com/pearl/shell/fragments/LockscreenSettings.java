@@ -42,6 +42,8 @@ import android.view.ViewGroup;
 import com.android.settings.SettingsPreferenceFragment;
 
 import com.pearl.shell.preferences.Utils;
+import android.hardware.fingerprint.FingerprintManager;
+import com.pearl.shell.preferences.SystemSettingSwitchPreference;
 
 public class LockscreenSettings extends SettingsPreferenceFragment implements
         Preference.OnPreferenceChangeListener {
@@ -50,6 +52,7 @@ public class LockscreenSettings extends SettingsPreferenceFragment implements
     private static final String KEY_FACE_UNLOCK_PACKAGE = "com.android.facelock";
     private static final String FINGERPRINT_VIB = "fingerprint_success_vib";
     private static final String FP_UNLOCK_KEYSTORE = "fp_unlock_keystore";
+    private static final String FP_CAT = "fp_category";
 
     private FingerprintManager mFingerprintManager;
     private SwitchPreference mFingerprintVib;
@@ -74,16 +77,24 @@ public class LockscreenSettings extends SettingsPreferenceFragment implements
             mFaceUnlock.setOnPreferenceChangeListener(this);
         }
 
+        PreferenceCategory fingerprintCategory = (PreferenceCategory) findPreference(FP_CAT);
+
         mFingerprintManager = (FingerprintManager) getActivity().getSystemService(Context.FINGERPRINT_SERVICE);
         mFingerprintVib = (SwitchPreference) findPreference(FINGERPRINT_VIB);
-        if (mFingerprintManager == null){
-            prefScreen.removePreference(mFingerprintVib);
-        } else {
+        mFpKeystore = (SystemSettingSwitchPreference) findPreference(FP_UNLOCK_KEYSTORE);
+        if (mFingerprintManager != null && mFingerprintManager.isHardwareDetected()){
         mFingerprintVib.setChecked((Settings.System.getInt(getContentResolver(),
                 Settings.System.FINGERPRINT_SUCCESS_VIB, 1) == 1));
         mFingerprintVib.setOnPreferenceChangeListener(this);
-        mFpKeystore = (SystemSettingSwitchPreference) findPreference(FP_UNLOCK_KEYSTORE);
+        } else {
+        fingerprintCategory.removePreference(mFingerprintVib);
+        fingerprintCategory.removePreference(mFpKeystore);
         }
+    }
+
+    @Override
+    public int getMetricsCategory() {
+        return MetricsProto.MetricsEvent.PEARL;
     }
 
     public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -102,10 +113,4 @@ public class LockscreenSettings extends SettingsPreferenceFragment implements
         }
         return false;
     }
-
-    @Override
-    public int getMetricsCategory() {
-        return MetricsProto.MetricsEvent.PEARL;
-    }
-
  }
